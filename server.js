@@ -1,39 +1,43 @@
 import express from "express";
 import cors from "cors";
-import XLSX from "xlsx";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const app = express();
-const PORT = process.env.PORT || 4000;
-
-app.use(cors());
-
-// Get proper directory path for hosted environment
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Use a relative Excel path instead of Z: drive
-const EXCEL_PATH = path.join(__dirname, "data", "compny group.xlsx");
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-const readExcel = () => {
+// ✅ FIXED: Correct CORS setup for frontend and local dev
+app.use(
+  cors({
+    origin: [
+      "https://omkar-yarn.vercel.app", // your frontend URL
+      "http://localhost:3000", // for local development
+    ],
+    methods: ["GET"],
+  })
+);
+
+app.use(express.json());
+
+// ✅ Serve your Excel/JSON data file from the "data" folder
+app.get("/api/yarn-data", (req, res) => {
   try {
-    const workbook = XLSX.readFile(EXCEL_PATH);
-    const sheetName = workbook.SheetNames[0];
-    const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
-    return sheet;
+    const filePath = path.join(__dirname, "data", "yarnData.json");
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    res.json(data);
   } catch (err) {
-    console.error("Error reading Excel:", err.message);
-    return [];
+    console.error("Error reading yarn data:", err);
+    res.status(500).json({ error: "Failed to load yarn data" });
   }
-};
-
-app.get("/data", (req, res) => {
-  const data = readExcel();
-  res.json(data);
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ Backend running on port ${PORT}`);
-  console.log(`📄 Reading Excel from: ${EXCEL_PATH}`);
+// ✅ Root endpoint
+app.get("/", (req, res) => {
+  res.send("Yarn Backend Running Successfully 🧶");
 });
+
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
