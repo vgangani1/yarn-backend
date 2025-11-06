@@ -5,15 +5,16 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 
+// Get proper directory path for hosted environment
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const EXCEL_PATH = "Z:\\VASU\\omkar-yarn-manager\\Backend\\data\\compny group.xlsx";
-
+// Use a relative Excel path instead of Z: drive
+const EXCEL_PATH = path.join(__dirname, "data", "compny group.xlsx");
 
 const readExcel = () => {
   try {
@@ -33,6 +34,6 @@ app.get("/data", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Backend running at http://localhost:${PORT}`);
-  console.log(`📄 Reading Excel: ${EXCEL_PATH}`);
+  console.log(`✅ Backend running on port ${PORT}`);
+  console.log(`📄 Reading Excel from: ${EXCEL_PATH}`);
 });
