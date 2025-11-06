@@ -10,20 +10,18 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ Fix: Allow your frontend to access this API
+// ✅ CORS configuration
 app.use(
   cors({
     origin: [
-      "https://omkar-yarn.vercel.app", // frontend URL
-      "http://localhost:3000", // for local testing
+      "https://omkar-yarn.vercel.app",
+      "http://localhost:3000"
     ],
     methods: ["GET"],
   })
 );
 
-app.use(express.json());
-
-// ✅ Read the Excel file and convert it to JSON
+// ✅ API route to serve Excel data
 app.get("/api/yarn-data", (req, res) => {
   try {
     const filePath = path.join(__dirname, "data", "compny group.xlsx");
@@ -39,9 +37,9 @@ app.get("/api/yarn-data", (req, res) => {
   }
 });
 
-// ✅ Root route
+// ✅ Root check
 app.get("/", (req, res) => {
-  res.send("Yarn Backend Running Successfully 🧶");
+  res.send("🧶 Omkar Yarn Backend is running successfully!");
 });
 
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server live on port ${PORT}`));
