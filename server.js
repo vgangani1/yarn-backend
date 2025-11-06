@@ -9,7 +9,6 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// ✅ CORS setup
 app.use(
   cors({
     origin: [
@@ -20,18 +19,19 @@ app.use(
   })
 );
 
-// ✅ API route
+// ✅ Yarn data API
 app.get("/api/yarn-data", (req, res) => {
   try {
-    const filePath = path.join(__dirname, "data", "compny group.xlsx");
-    const workbook = xlsx.readFile(filePath);
+    const excelPath = path.resolve("./data/compny group.xlsx");
+    const workbook = xlsx.readFile(excelPath);
     const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const jsonData = xlsx.utils.sheet_to_json(worksheet);
-    res.json(jsonData);
-  } catch (error) {
-    console.error("❌ Error reading Excel file:", error);
-    res.status(500).json({ error: "Failed to read Excel file" });
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
+
+    res.status(200).json(data);
+  } catch (err) {
+    console.error("Excel read error:", err);
+    res.status(500).json({ error: "Cannot read Excel file" });
   }
 });
 
@@ -40,5 +40,5 @@ app.get("/", (req, res) => {
   res.send("🧶 Omkar Yarn Backend is running successfully!");
 });
 
-// ✅ Export for Vercel
+// ✅ Export (IMPORTANT for Vercel)
 export default app;
