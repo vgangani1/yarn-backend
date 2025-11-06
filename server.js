@@ -20,7 +20,7 @@ app.use(
 );
 
 // ✅ Yarn data API
-app.get("/api/yarn-data", (req, res) => {
+app.get("/yarn-data", (req, res) => { ... });
   try {
     const excelPath = path.resolve("./data/compny group.xlsx");
     const workbook = xlsx.readFile(excelPath);
